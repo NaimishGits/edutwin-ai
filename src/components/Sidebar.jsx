@@ -1,7 +1,15 @@
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { logout } from "../lib/api"
 
 function Sidebar() {
   const location = useLocation()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate("/login")
+  }
+
 
   const menuItems = [
     {
@@ -47,11 +55,10 @@ function Sidebar() {
             <Link
               key={item.path}
               to={item.path}
-              className={`block rounded-lg px-4 py-3 transition ${
-                isActive
+              className={`block rounded-lg px-4 py-3 transition ${isActive
                   ? "bg-blue-600 text-white"
                   : "text-slate-400 hover:bg-slate-800 hover:text-white"
-              }`}
+                }`}
             >
               {item.icon} {item.name}
             </Link>
@@ -60,12 +67,12 @@ function Sidebar() {
 
         <div className="my-6 border-t border-slate-800" />
 
-        <Link
-          to="/"
-          className="block rounded-lg px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white"
+        <button
+          onClick={handleLogout}
+          className="block w-full rounded-lg px-4 py-3 text-left text-slate-400 hover:bg-slate-800 hover:text-white"
         >
           🚪 Logout
-        </Link>
+        </button>
 
       </nav>
     </aside>

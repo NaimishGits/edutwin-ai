@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-function Navbar() {
+function Navbar({ name = "Student", initials = "S" }) {
   return (
     <header className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-6 py-4">
 
@@ -16,11 +16,11 @@ function Navbar() {
       <div className="flex items-center gap-3">
 
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 font-semibold">
-          A
+          {initials}
         </div>
 
         <span className="hidden text-white sm:block">
-          Aditi
+          {name}
         </span>
 
       </div>

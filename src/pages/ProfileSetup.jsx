@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { api } from "../lib/api"
 
 function ProfileSetup() {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -19,6 +20,41 @@ function ProfileSetup() {
     careerGoal: ""
   })
 
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const profile = await api("/api/me")
+
+        setFormData({
+          fullName: profile.full_name || "",
+          course: profile.course || "",
+          semester: profile.semester || "",
+          college: profile.college || "",
+          cgpa: profile.cgpa ?? "",
+          attendance: profile.attendance ?? "",
+          studyHours: profile.study_hours_per_day ?? "",
+          assignments: profile.assignment_completion ?? "",
+          codingProblems: profile.coding_problems_per_month ?? "",
+          skills: "",
+          interests: (profile.interests || []).join(", "),
+          careerGoal: profile.career_goal || "",
+        })
+      } catch (requestError) {
+        setError(requestError.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadProfile()
+  }, [])
+
+
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -26,13 +62,59 @@ function ProfileSetup() {
     })
   }
 
-  const handleSubmit = (e) => {
-  e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError("")
 
-  console.log("Student Profile:", formData)
+    const numberOrUndefined = (value) =>
+      value === "" ? undefined : Number(value)
 
-  navigate("/dashboard")
-}
+    try {
+      setSaving(true)
+
+      await api("/api/profile", {
+        method: "PUT",
+        body: JSON.stringify({
+          full_name: formData.fullName,
+          college: formData.college,
+          course: formData.course,
+          semester: numberOrUndefined(formData.semester),
+          cgpa: numberOrUndefined(formData.cgpa),
+          attendance: numberOrUndefined(formData.attendance),
+          study_hours_per_day: numberOrUndefined(formData.studyHours),
+          assignment_completion: numberOrUndefined(formData.assignments),
+          coding_problems_per_month: numberOrUndefined(formData.codingProblems),
+          interests: formData.interests
+            .split(",")
+            .map((interest) => interest.trim())
+            .filter(Boolean),
+          career_goal: formData.careerGoal,
+        }),
+      })
+
+      navigate("/dashboard")
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-300">
+        Loading profile...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 p-6 text-red-400">
+        {error}
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 px-6 py-10 text-white">
@@ -63,6 +145,11 @@ function ProfileSetup() {
         onSubmit={handleSubmit}
         className="mx-auto max-w-4xl space-y-8"
       >
+        {error && (
+          <p className="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            {error}
+          </p>
+        )}
 
         {/* Personal Information */}
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-8">
@@ -330,9 +417,10 @@ function ProfileSetup() {
 
           <button
             type="submit"
-            className="rounded-lg bg-blue-600 px-8 py-3 font-semibold hover:bg-blue-700"
+            disabled={saving}
+            className="rounded-lg bg-blue-600 px-8 py-3 font-semibold hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Save Profile & Continue →
+            {saving ? "Saving profile..." : "Save Profile & Continue →"}
           </button>
 
         </div>

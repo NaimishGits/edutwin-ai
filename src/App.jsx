@@ -11,6 +11,7 @@ import Analytics from "./pages/Analytics"
 import Career from "./pages/Career"
 import Roadmap from "./pages/RoadMap"
 import About from "./pages/About"
+import ProtectedRoute from "./components/ProtectedRoute"
 
 
 function App() {
@@ -18,6 +19,78 @@ function App() {
     <BrowserRouter>
 
       <Routes>
+
+        <Route
+          path="/profile-setup"
+          element={
+            <ProtectedRoute>
+              <ProfileSetup />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/academic"
+          element={
+            <ProtectedRoute>
+              <Academic />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/skills"
+          element={
+            <ProtectedRoute>
+              <Skills />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/career"
+          element={
+            <ProtectedRoute>
+              <Career />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/roadmap"
+          element={
+            <ProtectedRoute>
+              <Roadmap />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} /> 
+        <Route path="/about" element={<About />} />
+
+      </Routes>
+
+      {/* <Routes>
 
         <Route path="/" element={<Home />} />
 
@@ -34,7 +107,7 @@ function App() {
         
 
 
-      </Routes>
+      </Routes> */}
 
     </BrowserRouter>
   )
